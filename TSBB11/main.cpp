@@ -4,7 +4,8 @@
 // which according to the web site was updated 2015-08-17.
 //
 // SDL functions written by Gustav Svensk, acquired with permissions from
-// https://github.com/DrDante/TSBK03Project/ 2015-09-24. Some related code
+// https://github.com/DrDante/TSBK03Project/ 2015-09-24. Some related code used
+// from that project written by Eric Rundcrantz, also acquired with permission.
 
 // Notes:
 // * Use glUniform1fv instead of glUniform1f, since glUniform1f has a bug under Linux.
@@ -31,6 +32,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "GL_utilities.h"
+#include "SDL_image.h"
 #include "loadobj.h"
 #include "LoadTGA.h"
 #include "glm.hpp"
@@ -83,7 +85,8 @@ Model *terrain;
 DataHandler* dataHandler;
 
 // Textures:
-TextureData ttex; // Terrain heightmap.
+//TextureData ttex; // Terrain heightmap.
+GLuint gTextureID = 0;
 
 // References to shader programs:
 GLuint program;
@@ -124,6 +127,32 @@ void init(void)
 	dataHandler = new DataHandler("resources/output.min.asc");
 	terrain = dataHandler->getModel();
 	//LoadTGATextureData("resources/fft-terrain.tga", &ttex);
+	std::string texPath = "resources/dummytexture.png";
+	// Texture loading
+	//gRenderer = SDL_CreateRenderer(return_window(), -1, SDL_RENDERER_ACCELERATED);
+	//gTexture = SDL_CreateTextureFromSurface(gRenderer, IMG_Load(texPath.c_str()));
+	// -------Copied from http://www.sdltutorials.com/sdl-tip-sdl-surface-to-opengl-texture 2015-10-09-------
+	// Should be integrated into custom texture function at some point
+
+	// You should probably use CSurface::OnLoad ... ;)
+	//-- and make sure the Surface pointer is good!
+	SDL_Surface* Surface = IMG_Load(texPath.c_str());
+
+	glGenTextures(1, &gTextureID);
+	glBindTexture(GL_TEXTURE_2D, gTextureID);
+
+	int Mode = GL_RGB;
+
+	if (Surface->format->BytesPerPixel == 4) {
+		Mode = GL_RGBA;
+	}
+
+	// Some .png files can trigger an error here. Cause unknown as of yet.
+	glTexImage2D(GL_TEXTURE_2D, 0, Mode, Surface->w, Surface->h, 0, Mode, GL_UNSIGNED_BYTE, Surface->pixels);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// ------------------------------------------------------------------------------------------------------
 
 	// Load and compile shaders.
 	program = loadShaders("src/shaders/main.vert", "src/shaders/main.frag");
@@ -168,15 +197,24 @@ void display(void)
 	trans = glm::translate(terrainTrans);
 	total = trans;
 	glUniformMatrix4fv(glGetUniformLocation(program, "MTWMatrix"), 1, GL_FALSE, glm::value_ptr(total));
+	// Texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTextureID);
+	glUniform1i(glGetUniformLocation(program, "texUnit"), 0);
+	int texW = dataHandler->getWidth();
+	int texH = dataHandler->getHeight();
+	glUniform1i(glGetUniformLocation(program, "texWidth"), texW);
+	glUniform1i(glGetUniformLocation(program, "texHeight"), texH);
 	DrawModel(terrain, program, "in_Position", "in_Normal", "in_TexCoord");
 
+	/*
 	// Teapot:
 	glm::vec3 teapotTrans = glm::vec3(200, 0, 200);
 	trans = glm::translate(teapotTrans);
 	scale = glm::scale(glm::vec3(0.5, 0.5, 0.5));
 	total = trans * scale;
 	glUniformMatrix4fv(glGetUniformLocation(program, "MTWMatrix"), 1, GL_FALSE, glm::value_ptr(total));
-	DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");
+	DrawModel(m, program, "in_Position", "in_Normal", "in_TexCoord");*/
 	// --------------------------------------
 
 	swap_buffers();

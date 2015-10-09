@@ -12,6 +12,10 @@ uniform vec3 lightSourcePos;	// Ljuspositionen.
 uniform int isDirectional;
 uniform float specularExponent;
 uniform vec3 lightSourceColor;
+uniform sampler2D texUnit;
+
+uniform int texWidth;
+uniform int texHeight;
 
 vec3 r;
 vec3 s;				// Infallande ljus.
@@ -60,6 +64,10 @@ void main(void)
 	totalLight += diffLight;
 	totalLight += specLight;
 
-	out_Color = vec4(totalLight, 1);
+	vec2 mod_TexCoord = out_TexCoord;
+	mod_TexCoord.x = mod_TexCoord.x / texWidth;
+	mod_TexCoord.y = mod_TexCoord.y / texHeight;
+
+	out_Color = texture(texUnit, mod_TexCoord) * vec4(totalLight, 1);
 }
 
