@@ -11,109 +11,13 @@
 #define LIN_SOLVE 20
 #endif
 
-/*
-class Grid
-{
-public:
-	Grid()
-	{
-		m_grid = new Voxel**[m_size+2];
-		for (unsigned int i = 0; i < m_size+2; i++)
-		{
-			m_grid[i] = new Voxel*[m_size+2];
-			for (unsigned int j = 0; j < m_size+2; j++)
-			{
-				m_grid[i][j] = new Voxel[m_size+2];
-			}
-		}
-	}
-	~Grid()
-	{
-		for (unsigned int i = 0; i < (m_size+2); i++)
-		{
-			for (unsigned int j =0; j < (m_size+2); j++)
-			{
-				delete [] m_grid[i][j];
-			}
-			delete [] m_grid[i];
-		}
-		delete [] m_grid;
-	}
-
-	std::vector<Voxel*> getBorderTop() { std::vector<Voxel*> temp; return temp; }
-	std::vector<Voxel*> getBorderBottom() { std::vector<Voxel*> temp; return temp; }
-	std::vector<Voxel*> getBorderLeft() { std::vector<Voxel*> temp; return temp; }
-	std::vector<Voxel*> getBorderRight() { std::vector<Voxel*> temp; return temp; }
-	std::vector<Voxel*> getBorderFront() { std::vector<Voxel*> temp; return temp; }
-	std::vector<Voxel*> getBorderBack() { std::vector<Voxel*> temp; return temp; }
-
-	Voxel* getVoxel(unsigned int x,unsigned int y,unsigned int z)
-	{
-		return &m_grid[x][y][z];
-	}
-
-	Voxel* getVoxel(glm::ivec3 xyz)
-	{
-		return &m_grid[xyz.x][xyz.y][xyz.z];
-	}
-
-	NeighbourVoxels getNeighbour(unsigned int x, unsigned int y, unsigned int z)
-	{
-		NeighbourVoxels vox;
-		vox.voxels[CUBEPOS::BACK_TOP_LEFT] = getVoxel(x-1,y-1,z-1);
-		vox.voxels[CUBEPOS::BACK_TOP_CENTER] = getVoxel(x,y-1,z-1);
-		vox.voxels[CUBEPOS::BACK_TOP_RIGHT] = getVoxel(x+1,y-1,z-1);
-
-		vox.voxels[CUBEPOS::BACK_MID_LEFT] = getVoxel(x-1,y,z-1);
-		vox.voxels[CUBEPOS::BACK_MID_CENTER] = getVoxel(x,y,z-1);
-		vox.voxels[CUBEPOS::BACK_MID_RIGHT] = getVoxel(x+1,y,z-1);
-
-		vox.voxels[CUBEPOS::BACK_BOTTOM_LEFT] = getVoxel(x-1,y+1,z-1);
-		vox.voxels[CUBEPOS::BACK_BOTTOM_CENTER] = getVoxel(x,y+1,z-1);
-		vox.voxels[CUBEPOS::BACK_BOTTOM_RIGHT] = getVoxel(x+1,y+1,z-1);
-
-		vox.voxels[CUBEPOS::CURRENT_TOP_LEFT] = getVoxel(x-1,y-1,z);
-		vox.voxels[CUBEPOS::CURRENT_TOP_CENTER] = getVoxel(x,y-1,z);
-		vox.voxels[CUBEPOS::CURRENT_TOP_RIGHT] = getVoxel(x+1,y-1,z);
-
-		vox.voxels[CUBEPOS::CURRENT_MID_LEFT] = getVoxel(x-1,y,z);
-		vox.voxels[CUBEPOS::CURRENT_MID_CENTER] = getVoxel(x,y,z);
-		vox.voxels[CUBEPOS::CURRENT_MID_RIGHT] = getVoxel(x+1,y,z);
-
-		vox.voxels[CUBEPOS::CURRENT_BOTTOM_LEFT] = getVoxel(x-1,y+1,z);
-		vox.voxels[CUBEPOS::CURRENT_BOTTOM_CENTER] = getVoxel(x,y+1,z);
-		vox.voxels[CUBEPOS::CURRENT_BOTTOM_RIGHT] = getVoxel(x+1,y+1,z);
-
-		vox.voxels[CUBEPOS::FRONT_TOP_LEFT] = getVoxel(x-1,y-1,z+1);
-		vox.voxels[CUBEPOS::FRONT_TOP_CENTER] = getVoxel(x,y-1,z+1);
-		vox.voxels[CUBEPOS::FRONT_TOP_RIGHT] = getVoxel(x+1,y-1,z+1);
-
-		vox.voxels[CUBEPOS::FRONT_MID_LEFT] = getVoxel(x-1,y,z+1);
-		vox.voxels[CUBEPOS::FRONT_MID_CENTER] = getVoxel(x,y,z+1);
-		vox.voxels[CUBEPOS::FRONT_MID_RIGHT] = getVoxel(x+1,y,z+1);
-
-		vox.voxels[CUBEPOS::FRONT_BOTTOM_LEFT] = getVoxel(x-1,y+1,z+1);
-		vox.voxels[CUBEPOS::FRONT_BOTTOM_CENTER] = getVoxel(x,y+1,z+1);
-		vox.voxels[CUBEPOS::FRONT_BOTTOM_RIGHT] = getVoxel(x+1,y+1,z+1);
-		
-		return vox;
-	}
-
-	NeighbourVoxels getNeighbour(Voxel* it) { return NeighbourVoxels(); }
-	unsigned int XLength;
-	unsigned int YLength;
-	unsigned int ZLength;
-private:
-	Voxel*** m_grid;
-	unsigned int m_size;
-};
-*/
-
 class FluidSolver
 {
 public:
-	FluidSolver() {};
+	FluidSolver(Voxelgrid* grid) : m_grid(grid) {};
 	~FluidSolver() {};
+
+	void runSimulation(float dt);
 private:
 	void dens_step(float dt);
 	void velocity_step(float dt);
@@ -145,7 +49,7 @@ private:
 	void force_boundries_preassure();
 	void force_boundries_divergence();
 
-	Voxelgrid m_grid;
+	Voxelgrid* m_grid;
 };
 
 

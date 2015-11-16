@@ -39,7 +39,7 @@ struct Voxel
 
 struct NeighbourVoxels
 {
-	NeighbourVoxels() {};
+	NeighbourVoxels() { voxels.resize(27); };
 	~NeighbourVoxels() {
 		voxels.erase(voxels.cbegin(), voxels.cend());
 	};

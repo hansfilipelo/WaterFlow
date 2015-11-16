@@ -53,15 +53,17 @@ namespace voxelTest{
     std::cout << float( clock () - begin_time ) /  CLOCKS_PER_SEC << std::endl;
   }
 
-  VoxelTest::VoxelTest(DataHandler* inDataPtr,Voxelgrid* inGridPtr){
+  VoxelTest::VoxelTest(DataHandler* inDataPtr,Voxelgrid* inGridPtr, FluidSolver* inSolverPtr){
     dataPtr = inDataPtr;
     gridPtr = inGridPtr;
+	solverPtr = inSolverPtr;
   }
 
   void mainTest(VoxelTest* tester){
     Voxelgrid* grid = tester->gridPtr;
+	FluidSolver* solver = tester->solverPtr;
     startClock();
-    size_t count = 300;
+    size_t count = 9;
     size_t end = 0;
 
     plsWait();
@@ -77,17 +79,7 @@ namespace voxelTest{
 
     //Read and modify the voxels
     startClock();
-    for (size_t x = 0; x < count; x++) {
-      for (size_t y = 0; y < count; y++) {
-        for (size_t z = 0; z < count; z++) {
-          Voxel* tmp = grid->getVoxel(x,y,z);
-          if(tmp != nullptr){
-            //tmp->a++;
-            //printf("x: %f  y: %f  ", tmp->a,tmp->b);
-          }
-        }
-      }
-    }
+	solver->runSimulation(0.1f);
     printf("\n");
     endClock();
     //Delete the voxels
@@ -96,11 +88,6 @@ namespace voxelTest{
     plsWait();
     //Read some voxels that doesn't exist
 
-
-  }
-
-  void fluidTest()
-  {
 
   }
 

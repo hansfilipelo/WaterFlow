@@ -3,6 +3,7 @@
 
 #include "voxelGrid.h"
 #include "readData.h"
+#include "../../../Simulation/C++/fluidsolver.h"
 #include "glm.hpp"
 #include <iostream>
 #include <cstdlib>
@@ -13,8 +14,9 @@ namespace voxelTest{
   public:
     DataHandler* dataPtr;
     Voxelgrid* gridPtr;
+	FluidSolver* solverPtr;
 
-    VoxelTest(DataHandler* inDataPtr,Voxelgrid* inGridPtr);
+    VoxelTest(DataHandler* inDataPtr,Voxelgrid* inGridPtr, FluidSolver* inSolverPtr);
   };
 
 
