@@ -88,10 +88,30 @@ bool Program::init() {
 	// Load and compile shaders.
 	terrainshader = loadShaders("src/shaders/terrainshader.vert", "src/shaders/terrainshader.frag");
 	skyshader = loadShaders("src/shaders/skyshader.vert", "src/shaders/skyshader.frag");
+	watershader = loadShaders("src/shaders/watershader.vert", "src/shaders/watershader.frag");
 
 	// Create drawables
 	terrain = new Terrain(terrainshader, dataHandler->getModel(), dataHandler->getTextureID(), glm::vec3(dataHandler->getDataWidth(), dataHandler->getTerrainScale(), dataHandler->getDataHeight()));
 	skycube = new SkyCube(skyshader);
+	float wHeight = 200;
+	GLfloat wSurface[] = {
+		0, wHeight, 0,
+		0, wHeight, dataHandler->getDataHeight(),
+		dataHandler->getDataWidth(), wHeight, dataHandler->getDataHeight(),
+		dataHandler->getDataWidth(), wHeight, 0 };
+	GLfloat wNormals[] = {
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0,
+		0, 1, 0 };
+	GLfloat wTexCoords[] = {
+		0, 0,
+		0, 1,
+		1, 1,
+		1, 0 };
+	GLuint wIndices[] = { 0, 1, 2, 0, 2, 3 };
+	Model* waterModel = LoadDataToModel(wSurface, wNormals, wTexCoords, NULL, wIndices, 4, 6);
+	waterBody = new WaterBody(watershader, waterModel, dataHandler->getTextureID(), glm::vec3(1, 1, 1), dataHandler->getDataHeight(), dataHandler->getDataWidth());
 
 	/*Initialize AntTweakBar
 	*/
@@ -141,7 +161,7 @@ void Program::display() {
 	glUseProgram(skyshader);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 
 	// ---Camera shader data---
 	cam->uploadCamData(skyshader);
@@ -151,13 +171,17 @@ void Program::display() {
 	glUseProgram(terrainshader);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glCullFace(GL_BACK);
 
 	// ---Camera shader data---
 	cam->uploadCamData(terrainshader);
 	terrain->draw();
+
+	// Water body
+	cam->uploadCamData(watershader);
+	waterBody->draw();
 
 	// ====================== Draw AntBar ===========================
 	TwDraw();

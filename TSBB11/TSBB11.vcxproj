@@ -325,6 +325,8 @@
     <None Include="src\shaders\plaintextureshader.vert" />
     <None Include="src\shaders\skyshader.frag" />
     <None Include="src\shaders\skyshader.vert" />
+    <None Include="src\shaders\watershader.frag" />
+    <None Include="src\shaders\watershader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

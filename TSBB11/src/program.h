@@ -48,13 +48,13 @@ private:
 	double objX, objZ;
 	
 	// myDrawables:
-	myDrawable *skycube, *terrain;
+	myDrawable *skycube, *terrain, *waterBody;
 
 	// Datahandler for terrain data
 	DataHandler* dataHandler;
 
 	// References to shader programs:
-	GLuint terrainshader, skyshader;
+	GLuint terrainshader, skyshader, watershader;
 
 	// Camera variables:
 	Camera* cam;

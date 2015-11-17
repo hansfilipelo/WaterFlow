@@ -7,6 +7,7 @@
 #include "LoadTGA.h"
 
 #include "gtx/transform.hpp"
+#include "gtx/rotate_vector.hpp"
 #include "gtc/type_ptr.hpp"
 
 myDrawable::myDrawable(GLuint program) 
@@ -98,4 +99,53 @@ void Terrain::draw() {
 	for (GLuint i = 0; i < model->size(); i++) {
 		DrawModel(model->at(i), program, "in_Position", "in_Normal", "in_TexCoord");
 	}
+}
+
+WaterBody::WaterBody(GLuint program, Model* inModel, GLuint texID, glm::vec3 scale, int texCoordScaleW, int texCoordScaleH)
+	: myDrawable(program) {
+	model = inModel;
+	textureID = texID;
+	MTWMatrix = glm::scale(scale);
+	inverseNormalMatrixTrans = glm::transpose(glm::inverse(glm::mat3(MTWMatrix)));
+
+	// Initial one-time shader uploads.
+	// Light information:
+	glm::vec3 sunPos = { 0.58f, 0.58f, 0.58f }; // Since the sun is a directional source, this is the negative direction, not the position.
+	// Calculating modified incoming light
+	float waterRefInd = 1.34451;
+	float airRefInd = 1.0;
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 right = glm::cross(normalize(sunPos), up);
+	// Snell's law
+	float theta1 = asinf(glm::length(right));
+	float theta2 = asinf(airRefInd * sinf(theta1) / waterRefInd);
+	glm::vec3 waterSunPos = glm::rotate(sunPos, theta1, right);
+	waterSunPos = glm::rotate(waterSunPos, -theta2, right);
+	bool sunIsDirectional = 1;
+	float sunSpecularExponent = 50.0;
+	glm::vec3 sunColor = { 1.0f, 1.0f, 1.0f };
+	GLfloat sun_GLf[3] = { sunPos.x, sunPos.y, sunPos.z };
+	GLfloat waterSun_GLf[3] = { waterSunPos.x, waterSunPos.y, waterSunPos.z };
+
+	glUseProgram(program);
+	glUniform3fv(glGetUniformLocation(program, "lightSourcePosAir"), 1, sun_GLf);
+	glUniform3fv(glGetUniformLocation(program, "lightSourcePosWater"), 1, waterSun_GLf);
+	glUniform1i(glGetUniformLocation(program, "isDirectional"), sunIsDirectional);
+	glUniform1fv(glGetUniformLocation(program, "specularExponent"), 1, &sunSpecularExponent);
+	GLfloat sunColor_GLf[3] = { sunColor.x, sunColor.y, sunColor.z };
+	glUniform3fv(glGetUniformLocation(program, "lightSourceColor"), 1, sunColor_GLf);
+
+	glUniform1i(glGetUniformLocation(program, "texUnit"), 0);
+
+	glUniform1i(glGetUniformLocation(program, "texCoordScaleH"), texCoordScaleH);
+	glUniform1i(glGetUniformLocation(program, "texCoordScaleW"), texCoordScaleW);
+
+	glUniformMatrix4fv(glGetUniformLocation(program, "MTWMatrix"), 1, GL_FALSE, glm::value_ptr(MTWMatrix));
+	glUniformMatrix3fv(glGetUniformLocation(program, "iNormalMatrixTrans"), 1, GL_FALSE, glm::value_ptr(inverseNormalMatrixTrans));
+}
+
+void WaterBody::draw() {
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	DrawModel(model, program, "in_Position", "in_Normal", "in_TexCoord");
 }

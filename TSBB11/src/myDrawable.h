@@ -40,5 +40,16 @@ public:
 	virtual void draw();
 };
 
+class WaterBody : public myDrawable {
+private:
+	Model* model;
+	glm::mat3 inverseNormalMatrixTrans;
+	GLuint textureID;
+
+public:
+	WaterBody(GLuint program, Model* inModel, GLuint texID, glm::vec3 scale, int texCoordScaleW, int texCoordScaleH);
+	virtual void draw();
+};
+
 
 #endif // DRAWABLE_H
