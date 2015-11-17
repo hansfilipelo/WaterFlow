@@ -6,7 +6,7 @@
 
 #include "loadobj.h"
 #include "glm.hpp"
-
+#include "LoadTGA.h"
 #include <vector>
 
 class myDrawable {

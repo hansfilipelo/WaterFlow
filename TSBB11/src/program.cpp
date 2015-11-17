@@ -91,6 +91,7 @@ bool Program::init() {
 	watershader = loadShaders("src/shaders/watershader.vert", "src/shaders/watershader.frag");
 
 	// Terrain texture
+/*
 	GLuint gTextureID = 0;
 	std::string texPath = "resources/dummytexture.png";
 	// Texture loading
@@ -111,25 +112,31 @@ bool Program::init() {
 	if (Surface->format->BytesPerPixel == 4) {
 		Mode = GL_RGBA;
 	}
-
+*/
+  TextureData Gtexture;
+	LoadTGATextureData("resources/grass.tga", &Gtexture);
 	// Some .png files can trigger an error here. Cause unknown as of yet.
-	glTexImage2D(GL_TEXTURE_2D, 0, Mode, Surface->w, Surface->h, 0, Mode, GL_UNSIGNED_BYTE, Surface->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Gtexture.width, Gtexture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, Gtexture.imageData);
+
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// ------------------------------------------------------------------------------------------------------
 
+
 	// Create drawables
-	terrain = new Terrain(terrainshader, dataHandler->getModel(), gTextureID, glm::vec3(dataHandler->getDataWidth(), dataHandler->getTerrainScale(), dataHandler->getDataHeight()));
+	terrain = new Terrain(terrainshader, dataHandler->getModel(), Gtexture.texID, glm::vec3(dataHandler->getDataWidth(), dataHandler->getTerrainScale(), dataHandler->getDataHeight()));
 	skycube = new SkyCube(skyshader);
 
 	// Water
+	float dataheight = (float)dataHandler->getDataHeight();
+	float datawidth = (float)dataHandler->getDataWidth();
 	float wHeight = 200;
 	GLfloat wSurface[] = {
 		0, wHeight, 0,
-		0, wHeight, dataHandler->getDataHeight(),
-		dataHandler->getDataWidth(), wHeight, dataHandler->getDataHeight(),
-		dataHandler->getDataWidth(), wHeight, 0 };
+		0, wHeight, dataheight,
+		datawidth, wHeight, dataheight,
+		datawidth, wHeight, 0 };
 	GLfloat wNormals[] = {
 		0, 1, 0,
 		0, 1, 0,

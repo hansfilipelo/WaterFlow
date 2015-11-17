@@ -26,7 +26,7 @@
 #include "myDrawable.h"
 
 #include "AntTweakBar.h"
-#include "SDL_image.h"
+//#include "SDL_image.h"
 
 class Program {
 private:
@@ -47,7 +47,7 @@ private:
 	TwBar *antBar;
 	float heightAtPos, heightAtClickData, heighAtClickProj;
 	double objX, objZ;
-	
+
 	// myDrawables:
 	myDrawable *skycube, *terrain, *waterBody;
 
@@ -64,7 +64,7 @@ public:
 	int exec();
 
 	bool init();
-	
+
 	void handleEvent(SDL_Event* event);
 	void handleKeypress(SDL_Event* event);
 	void handleMouseMove(SDL_Event* event);

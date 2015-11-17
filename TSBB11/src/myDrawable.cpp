@@ -4,13 +4,13 @@
 #include "myDrawable.h"
 
 #include "Utilities.h"
-#include "LoadTGA.h"
+
 
 #include "gtx/transform.hpp"
 #include "gtx/rotate_vector.hpp"
 #include "gtc/type_ptr.hpp"
 
-myDrawable::myDrawable(GLuint program) 
+myDrawable::myDrawable(GLuint program)
 : program(program) {}
 
 SkyCube::SkyCube(GLuint program)
