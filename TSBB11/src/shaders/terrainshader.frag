@@ -56,8 +56,10 @@ void main(void)
 	totalLight += specLight;
 
 	// Just to check that the terrain data texture is working
-	vec4 terrainData = texture(texUnit, out_TexCoord) + 0.0000001f * totalLight.x;
+	//vec4 terrainData = texture(texUnit, out_TexCoord) + 0.0000001f * totalLight.x;
+	vec4 texColor = texture(texUnit, out_TexCoord);
 
-	out_Color = vec4(terrainData);
+	//out_Color = vec4(terrainData);
+	out_Color = vec4(texColor * vec4(totalLight, 1.0));
 }
 

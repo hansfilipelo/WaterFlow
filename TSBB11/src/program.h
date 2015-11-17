@@ -26,6 +26,7 @@
 #include "myDrawable.h"
 
 #include "AntTweakBar.h"
+#include "SDL_image.h"
 
 class Program {
 private:

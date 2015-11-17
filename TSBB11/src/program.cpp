@@ -90,9 +90,40 @@ bool Program::init() {
 	skyshader = loadShaders("src/shaders/skyshader.vert", "src/shaders/skyshader.frag");
 	watershader = loadShaders("src/shaders/watershader.vert", "src/shaders/watershader.frag");
 
+	// Terrain texture
+	GLuint gTextureID = 0;
+	std::string texPath = "resources/dummytexture.png";
+	// Texture loading
+	//gRenderer = SDL_CreateRenderer(return_window(), -1, SDL_RENDERER_ACCELERATED);
+	//gTexture = SDL_CreateTextureFromSurface(gRenderer, IMG_Load(texPath.c_str()));
+	// -------Copied from http://www.sdltutorials.com/sdl-tip-sdl-surface-to-opengl-texture 2015-10-09-------
+	// Should be integrated into custom texture function at some point
+
+	// You should probably use CSurface::OnLoad ... ;)
+	//-- and make sure the Surface pointer is good!
+	SDL_Surface* Surface = IMG_Load(texPath.c_str());
+
+	glGenTextures(1, &gTextureID);
+	glBindTexture(GL_TEXTURE_2D, gTextureID);
+
+	int Mode = GL_RGB;
+
+	if (Surface->format->BytesPerPixel == 4) {
+		Mode = GL_RGBA;
+	}
+
+	// Some .png files can trigger an error here. Cause unknown as of yet.
+	glTexImage2D(GL_TEXTURE_2D, 0, Mode, Surface->w, Surface->h, 0, Mode, GL_UNSIGNED_BYTE, Surface->pixels);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// ------------------------------------------------------------------------------------------------------
+
 	// Create drawables
-	terrain = new Terrain(terrainshader, dataHandler->getModel(), dataHandler->getTextureID(), glm::vec3(dataHandler->getDataWidth(), dataHandler->getTerrainScale(), dataHandler->getDataHeight()));
+	terrain = new Terrain(terrainshader, dataHandler->getModel(), gTextureID, glm::vec3(dataHandler->getDataWidth(), dataHandler->getTerrainScale(), dataHandler->getDataHeight()));
 	skycube = new SkyCube(skyshader);
+
+	// Water
 	float wHeight = 200;
 	GLfloat wSurface[] = {
 		0, wHeight, 0,
@@ -111,6 +142,7 @@ bool Program::init() {
 		1, 0 };
 	GLuint wIndices[] = { 0, 1, 2, 0, 2, 3 };
 	Model* waterModel = LoadDataToModel(wSurface, wNormals, wTexCoords, NULL, wIndices, 4, 6);
+
 	waterBody = new WaterBody(watershader, waterModel, dataHandler->getTextureID(), glm::vec3(1, 1, 1), dataHandler->getDataHeight(), dataHandler->getDataWidth());
 
 	/*Initialize AntTweakBar

@@ -92,6 +92,9 @@
     <ClInclude Include="src\myDrawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\common\SDL_image.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\combineshader.frag">
